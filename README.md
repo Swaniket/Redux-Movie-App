@@ -53,92 +53,130 @@ It's kind of like the global state of the application. Complex application can h
         });
 
 
+**Slicer:**
+It's the brain or the logic portion of the state. It has a few parts to it.
+1. The Initial state.
+
+        const initialState = {
+        movies: {},
+        shows: {},
+        selectedMovieOrShow: {},
+        Loading: false,
+        };
+
+2. Create Slicer with that state.
+
+        const movieSlice = createSlice({
+            name: "movies",
+            initialState,
+            reducers: {
+                removeSeletedMovieOrShow: (state) => {
+                state.selectedMovieOrShow = {};
+                },
+            },
+        });
+
+In the reducer array, declare the actions(Synchronous)
 
 
+**API Call with Axios & createAsyncThunk**
+1. Create `movieApi.js` file:
+
+        import axios from "axios";
+
+        export default axios.create({
+            baseURL: "https://www.omdbapi.com",
+            
+        })
+
+2. In Your Slicer file: 
+
+        import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+        import movieApi from "../../common/api/movieApi";
+        import { APIKey } from "../../common/api/movieApiKey";
+
+        export const fetchAsyncMovies = createAsyncThunk(
+        "movies/fetchAsyncMovies",
+        async (movieSearchText) => {
+            const response = await movieApi.get(
+            `?apikey=${APIKey}&s=${movieSearchText}&type=movie`
+            );
+            return response.data;
+        }
+        );
+
+        export const fetchAsyncShows = createAsyncThunk(
+        "movies/fetchAsyncShows",
+        async (seriesSearchText) => {
+            const response = await movieApi.get(
+            `?apikey=${APIKey}&s=${seriesSearchText}&type=series`
+            );
+            return response.data;
+        }
+        );
+
+        export const fetchAsyncMovieOrShowDetailByID = createAsyncThunk(
+        "movies/fetchAsyncMovieOrShowDetailByID",
+        async (id) => {
+            const response = await movieApi.get(`?apikey=${APIKey}&i=${id}&Plot=full`);
+            console.log(response);
+            return response.data;
+        }
+        );
+
+        const initialState = {
+        movies: {},
+        shows: {},
+        selectedMovieOrShow: {},
+        Loading: false,
+        };
+
+        const movieSlice = createSlice({
+        name: "movies",
+        initialState,
+        reducers: {
+            removeSeletedMovieOrShow: (state) => {
+            state.selectedMovieOrShow = {};
+            },
+        },
+        extraReducers: {
+            [fetchAsyncMovies.pending]: (state) => {
+            return { ...state, Loading: true };
+            },
+            [fetchAsyncMovies.fulfilled]: (state, { payload }) => {
+            console.log("Fetched Successfully");
+            return { ...state, movies: payload, Loading: false };
+            },
+            [fetchAsyncMovies.rejected]: (state) => {
+            return { ...state, Loading: false };
+            },
+
+            [fetchAsyncShows.pending]: (state) => {
+            return { ...state, Loading: true };
+            },
+            [fetchAsyncShows.fulfilled]: (state, { payload }) => {
+            console.log("Fetched Successfully");
+            return { ...state, shows: payload, Loading: false };
+            },
+            [fetchAsyncShows.rejected]: (state) => {
+            return { ...state, Loading: false };
+            },
+
+            [fetchAsyncMovieOrShowDetailByID.fulfilled]: (state, { payload }) => {
+            console.log("Fetched Successfully");
+            return { ...state, selectedMovieOrShow: payload };
+            },
+        },
+        });
+
+        export const getAllMovies = (state) => state.movies.movies;
+        export const getAllShows = (state) => state.movies.shows;
+        export const getLoadingState = (state) =>  state.movies.Loading;
+        export const getSelectedMovieOrShow = (state) =>
+        state.movies.selectedMovieOrShow;
+
+        export const { removeSeletedMovieOrShow } = movieSlice.actions;
+        export default movieSlice.reducer;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Note: createAsyncThunk is used to make async state updation such as with API calls**
