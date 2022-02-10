@@ -4,9 +4,10 @@
 
 
 **Store:**
-    Where you have to register your reducer(That is your application state)
+Where you have to register your reducer(That is your application state)
 
-    Create a separate store.js for declaring a store.
+Create a separate store.js for declaring a store.
+
         `
         import { configureStore } from "@reduxjs/toolkit";
         import moviesReducer from "./movies/movieSlice";
@@ -18,7 +19,8 @@
         });
         `
 
-    Register the store in the index.js file with provider.
+Register the store in the index.js file with provider.
+        
         `
         import React from "react";
         import ReactDOM from "react-dom";
@@ -41,7 +43,8 @@
 
 
 **Reducer:**
-    It's kind of like the global state of the application. Complex application can have multiple reducers. 
+It's kind of like the global state of the application. Complex application can have multiple reducers. 
+
         `
         import { configureStore } from "@reduxjs/toolkit";
         import moviesReducer from "./movies/movieSlice";
