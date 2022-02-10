@@ -1,3 +1,80 @@
+## Use Redux Toolkit with React
+
+**Dependency: "@reduxjs/toolkit": "^1.7.2", "react-redux": "^7.2.6", "redux": "^4.1.2"**
+
+
+**Store:**
+    Where you have to register your reducer(That is your application state)
+
+    Create a separate store.js for declaring a store.
+        `
+        import { configureStore } from "@reduxjs/toolkit";
+        import moviesReducer from "./movies/movieSlice";
+
+        export const store = configureStore({
+            reducer: {
+                movies: moviesReducer,
+            },
+        });
+        `
+
+    Register the store in the index.js file with provider.
+        `
+        import React from "react";
+        import ReactDOM from "react-dom";
+        import { BrowserRouter } from "react-router-dom";
+        import { Provider } from "react-redux";
+        import { store } from "./redux/store";
+        import App from "./App";
+
+        ReactDOM.render(
+            <React.StrictMode>
+                <Provider store={store}>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </Provider>
+            </React.StrictMode>,
+            document.getElementById("root")
+        );
+        `
+
+
+**Reducer:**
+    It's kind of like the global state of the application. Complex application can have multiple reducers. 
+        `
+        import { configureStore } from "@reduxjs/toolkit";
+        import moviesReducer from "./movies/movieSlice";
+        import showReducer from "./shows/showSlice";
+
+        export const store = configureStore({
+            reducer: {
+                movies: moviesReducer,
+                shows: showReducer,
+            },
+        });
+        `
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
